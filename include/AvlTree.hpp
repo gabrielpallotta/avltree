@@ -252,25 +252,25 @@ class AvlTree
 template <typename T>
 void printTree(ostream& os, const AvlTree<T>& tree, int space)
 {
-    if (tree.info == nullptr) {
-      return;
-    }
+  if (tree.info == nullptr) {
+    return;
+  }
 
-    space += 5;
+  space += 5;
 
-    if (tree.right != nullptr) {
-      printTree(os, *tree.right, space);
-    }
+  if (tree.right != nullptr) {
+    printTree(os, *tree.right, space);
+  }
 
-    os << endl;
-    for (int i = 5 ; i < space; i++)
-        os << " ";
+  os << endl;
+  for (int i = 5 ; i < space; i++)
+    os << " ";
 
-    os << *tree.info << endl;
+  os << *tree.info << endl;
 
-    if (tree.left != nullptr) {
-      printTree(os, *tree.left, space);
-    }
+  if (tree.left != nullptr) {
+    printTree(os, *tree.left, space);
+  }
 }
 
 template <typename T>
