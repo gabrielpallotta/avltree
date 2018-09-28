@@ -14,45 +14,58 @@ class AvlTree
       this->right = nullptr;
       this->left = nullptr;
       this->info = nullptr;
-      this->eq = 0;
+      this->height = 0;
+      this->correctHeight = true;
     }
-
 
     void add (const T &info) throw (char*)
     {
-      // Inserir aqui
+      // Inserir no this
       if (this->info == nullptr) {
-        this->info =  new T(info);
+        this->info = new T(info);
+        this->height = 1;
       }
-      // Já tem
-      else if (info == *this->info) {
-        throw "Info already on tree.";
-      }
-
       // Inserir na esquerda
       else if (info < *this->info) {
         if (this->left == nullptr) {
           this->left = new AvlTree();
         }
         this->left->add(info);
-        this->eq--;
       }
       // Inserir na direita
-      else {
+      else if (info > *this->info) {
         if (this->right == nullptr) {
           this->right = new AvlTree();
         }
         this->right->add(info);
-        this->eq++;
       }
+      // Ja tem
+      else {
+        throw "Info already on tree";
+      }
+      this->correctHeight = false;
+      this->calculateHeight();
       this->balance();
     }
 
     void remove (const T &info)
     {
-      // Remover atual
-      if (info == *this->info) {
-        this->info = nullptr;
+      // Nao tem (so entra aqui se for raiz)
+      if (this->info == nullptr) {
+        throw "Info not on tree";
+      }
+      // Remover aqui
+       else if (info == *this->info) {
+        if (this->left != nullptr) {
+          *this->info = this->left->getBiggestInfo();
+          this->left->remove(*this->info);
+        } else if (this->right != nullptr) {
+          *this->info = this->right->getSmallestInfo();
+          this->right->remove(*this->info);
+        } else {
+          this->info = nullptr;
+          return;
+        }
       }
       // Remover pra esquerda
       else if (info < *this->info) {
@@ -60,12 +73,7 @@ class AvlTree
           throw "Info not on tree.";
         } else {
           this->left->remove(info);
-          if (this->left->info == nullptr) {
-            delete this->left;
-            this->left = nullptr;
-          }
         }
-        this->eq++;
       }
       // Remover pra direita
       else {
@@ -73,13 +81,24 @@ class AvlTree
           throw "Info not on tree.";
         } else {
           this->right->remove(info);
-          if (this->right->info == nullptr) {
-            delete this->right;
-            this->right = nullptr;
-          }
         }
-        this->eq--;
       }
+
+      // Deleta no da direita se estiver vazio
+      if (this->right != nullptr && this->right->info == nullptr) {
+        delete this->right;
+        this->right = nullptr;
+      }
+
+      // Deleta no da esquerda se estiver vazio
+      if (this->left != nullptr && this->left->info == nullptr) {
+        delete this->left;
+        this->left = nullptr;
+      }
+
+      // Recalcula altura e equilibra a arvore
+      this->correctHeight = false;
+      this->calculateHeight();
       this->balance();
     }
 
@@ -88,18 +107,35 @@ class AvlTree
     AvlTree<T>* left;
     AvlTree<T>* right;
     T* info;
-    int eq;
+    int height;
+    bool correctHeight;
+
+    int getBalance ()
+    {
+      int left = 0;
+      int right = 0;
+
+      if (this->left != nullptr) {
+        left = this->left->height;
+      }
+
+      if (this->right != nullptr) {
+        right = this->right->height;
+      }
+
+      return (right - left);
+    }
 
     void balance ()
     {
-      if (this->eq > 1) {
-        if (this->right->eq < 0) {
+      if (this->getBalance() > 1) {
+        if (this->right->getBalance() < 0) {
           this->rotateDoubleLeft();
         } else{
           this->rotateLeft();
         }
-      } else if (this->eq < -1) {
-        if (this->left->eq > 0) {
+      } else if (this->getBalance() < -1) {
+        if (this->left->getBalance() > 0) {
           this->rotateDoubleRight();
         } else {
           this->rotateRight();
@@ -113,10 +149,10 @@ class AvlTree
       AvlTree right = *this->right;
       AvlTree* leftOfRight = this->right->left;
 
-      // Filho da direita vira raíz
+      // Filho da direita vira raiz
       *this = right;
 
-      // Raíz original vira filho da esquerda da nova raíz
+      // Raiz original vira filho da esquerda da nova raiz
       this->left = new AvlTree<T>();
       *this->left = root;
 
@@ -127,6 +163,10 @@ class AvlTree
         this->left->right = new AvlTree<T>();
         *this->left->right = *leftOfRight;
       }
+
+      this->correctHeight = false;
+      this->left->correctHeight = false;
+      this->calculateHeight();
     }
 
     void rotateRight ()
@@ -135,10 +175,10 @@ class AvlTree
       AvlTree left = *this->left;
       AvlTree* rightOfLeft = this->left->right;
 
-      // Filho da esquerda vira raíz
+      // Filho da esquerda vira raiz
       *this = left;
 
-      // Raíz original vira filho da direita da nova raíz
+      // Raiz original vira filho da direita da nova raiz
       this->right = new AvlTree<T>();
       *this->right = root;
 
@@ -149,6 +189,10 @@ class AvlTree
         this->right->left = new AvlTree<T>();
         *this->right->left = *rightOfLeft;
       }
+
+      this->correctHeight = false;
+      this->right->correctHeight = false;
+      this->calculateHeight();
     }
 
     void rotateDoubleLeft ()
@@ -161,6 +205,45 @@ class AvlTree
     {
       this->left->rotateLeft();
       this->rotateRight();
+    }
+
+    void calculateHeight()
+    {
+      if (!this->correctHeight) {
+        int left = 0;
+        int right = 0;
+
+        if (this->right != nullptr) {
+          this->right->calculateHeight();
+          right = this->right->height;
+        }
+
+        if (this->left != nullptr) {
+          this->left->calculateHeight();
+          left = this->left->height;
+        }
+
+        this->height = max(left, right) + 1;
+        this->correctHeight = true;
+      }
+    }
+
+    T getBiggestInfo ()
+    {
+      if (this->right == nullptr) {
+        return *this->info;
+      } else {
+        return this->right->getBiggestInfo();
+      }
+    }
+
+    T getSmallestInfo ()
+    {
+      if (this->left == nullptr) {
+        return *this->info;
+      } else {
+        return this->left->getSmallestInfo();
+      }
     }
 
     template <typename U> friend void printTree(ostream& os, const AvlTree<U>& tree, int count);
@@ -185,7 +268,6 @@ void printTree(ostream& os, const AvlTree<T>& tree, int space)
 
     os << *tree.info << endl;
 
-
     if (tree.left != nullptr) {
       printTree(os, *tree.left, space);
     }
@@ -194,9 +276,9 @@ void printTree(ostream& os, const AvlTree<T>& tree, int space)
 template <typename T>
 ostream& operator<<(ostream& os, const AvlTree<T>& tree)
 {
-  os << "-------------" << endl;
+  os << "--------------------------" << endl;
   printTree(os, tree, 0);
-  os << "-------------" << endl;
+  os << "--------------------------" << endl;
   return os;
 }
 
