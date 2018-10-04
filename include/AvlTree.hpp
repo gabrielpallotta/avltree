@@ -104,7 +104,10 @@ class AvlTree
 
     T* get (T info)
     {
-      if (info == *this->info) {
+      if (this->info == nullptr) {
+        return nullptr;
+      }
+      else if (info == *this->info) {
         return new T(*this->info);
       } else if (info > *this->info) {
         if (this->right != nullptr) {
