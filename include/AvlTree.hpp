@@ -102,6 +102,25 @@ class AvlTree
       this->balance();
     }
 
+    T* get (T info)
+    {
+      if (info == *this->info) {
+        return new T(*this->info);
+      } else if (info > *this->info) {
+        if (this->right != nullptr) {
+          return this->right->get(info);
+        } else {
+          return nullptr;
+        }
+      } else {
+        if (this->left != nullptr) {
+          return this->left->get(info);
+        } else {
+          return nullptr;
+        }
+      }
+    }
+
     template <typename U> friend ostream& operator<<(ostream& os, const AvlTree<U>& tree);
   private:
     AvlTree<T>* left;
