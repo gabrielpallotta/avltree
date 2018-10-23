@@ -24,5 +24,7 @@ int main()
   cout << *tree << endl;
   tree->remove(7);
   cout << *tree << endl;
+  int a;
+  cin >> a;
   return 0;
 }

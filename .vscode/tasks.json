@@ -1,0 +1,26 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "CMake",
+      "type": "shell",
+      "command": "cmake -H. -Bbuild",
+      "windows": {
+        "command": "cmake -G \"MinGW Makefiles\" -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug",
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Build",
+      "type": "shell",
+      "command": "make -C build",
+      "windows": {
+        "command": "mingw32-make -C build"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}
