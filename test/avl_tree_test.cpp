@@ -1,5 +1,5 @@
 #include <cmath>
-#include <exception>
+#include <stdexcept>
 
 #include "avl_tree.hpp"
 #include "gtest/gtest.h"

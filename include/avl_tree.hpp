@@ -2,7 +2,7 @@
 #define AVLTREE_H
 
 #include <iostream>
-#include <exception>
+#include <stdexcept>
 
 using namespace std;
 
