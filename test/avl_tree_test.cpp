@@ -15,8 +15,16 @@ class AvlTreeTest : public ::testing::Test {
     AvlTree<int> tree;
 };
 
-int idealHeight(int n) {
-  return ceil(log2(n + 1));
+bool validHeight(int n, int height) {
+  if (height < ceil(log2(n + 1))) {
+    return false;
+  }
+
+  if (height > floor(1.44f * log2(n + 2) - 0.328f)) {
+    return false;
+  }
+
+  return true;
 }
 
 TEST_F(AvlTreeTest, InsertsAndGetsValue) {
@@ -39,11 +47,11 @@ TEST_F(AvlTreeTest, RemovesValue) {
   }
 }
 
-TEST_F(AvlTreeTest, GetReturnsNullPointer) {
+TEST_F(AvlTreeTest, GetsNullPointer) {
   ASSERT_EQ(nullptr, tree.get(0));
 }
 
-TEST_F(AvlTreeTest, HeightIsCorrect) {
+TEST_F(AvlTreeTest, GetsTreeHeight) {
   ASSERT_EQ(0, tree.getHeight());
   tree.add(1);
   ASSERT_EQ(1, tree.getHeight());
@@ -51,22 +59,40 @@ TEST_F(AvlTreeTest, HeightIsCorrect) {
   ASSERT_EQ(0, tree.getHeight());
 }
 
-TEST_F(AvlTreeTest, IsBalanced) {
-  int it;
-  int i;
+TEST_F(AvlTreeTest, BalancesOnAscendingInsertion) {
+  for (int i = 1; i <= 1000; i++) {
+    tree.add(i);
+    ASSERT_TRUE(validHeight(i, tree.getHeight()));
+  }
+}
 
-  for (i = 0; i < 1000; i++) {
+TEST_F(AvlTreeTest, BalancesOnDescendingInsertion) {
+  for (int i = 1000; i > 0; i--) {
+    tree.add(i);
+    ASSERT_TRUE(validHeight(1001 - i, tree.getHeight()));
+  }
+}
+
+TEST_F(AvlTreeTest, BalancesOnAscendingRemoval) {
+  for (int i = 1; i <= 1000; i++) {
     tree.add(i);
   }
-  i--;
-  for (it = 1000; it >= 0; it -= 10) {
-    for (; i > it; i--) {
-      tree.remove(i);
-    }
-    ASSERT_EQ(idealHeight(i + 1), tree.getHeight());
+
+  for (int i = 1; i <= 1000; i++) {
+    tree.remove(i);
+    ASSERT_TRUE(validHeight(1000 - i, tree.getHeight()));
   }
-  tree.remove(i);
-  ASSERT_EQ(0, tree.getHeight());
+}
+
+TEST_F(AvlTreeTest, BalancesOnDescendingRemoval) {
+  for (int i = 1; i <= 1000; i++) {
+    tree.add(i);
+  }
+
+  for (int i = 1000; i > 0; i--) {
+    tree.remove(i);
+    ASSERT_TRUE(validHeight(i - 1, tree.getHeight()));
+  }
 }
 
 

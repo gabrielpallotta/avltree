@@ -124,7 +124,7 @@ class AvlTree
       }
     }
 
-    int getHeight()
+    int getHeight ()
     {
       return this->height;
     }
