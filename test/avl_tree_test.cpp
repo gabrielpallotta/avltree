@@ -1,6 +1,10 @@
 #include <cmath>
+#include <exception>
+
 #include "avl_tree.hpp"
 #include "gtest/gtest.h"
+
+using namespace std;
 
 class AvlTreeTest : public ::testing::Test {
   protected:
