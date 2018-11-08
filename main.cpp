@@ -19,13 +19,13 @@ int main()
 
   while (true) {
     system(CLEAR_CMD);
-    cout << "Árvore AVL:" << endl;
+    cout << "Arvore AVL:" << endl;
     cout << tree << endl;
 
     cout << "1 - Inserir" << endl;
     cout << "2 - Remover" << endl;
     cout << "3 - Consulta" << endl << endl;
-    cout << "Digite uma opção: ";
+    cout << "Digite uma opcao: ";
 
     int option;
     cin >> option;
@@ -35,37 +35,39 @@ int main()
       case 1:
         cout << "Digite o valor que deseja inserir: ";
         cin >> value;
+        cout << endl;
         try {
           tree.add(value);
           cout << "Valor inserido com sucesso" ;
         } catch (invalid_argument e) {
-          cout << "Valor já existe na árvore";
+          cout << "Valor ja existe na arvore";
         }
         break;
       case 2:
         cout << "Digite o valor que deseja remover: ";
         cin >> value;
+        cout << endl;
         try {
           tree.remove(value);
           cout << "Valor removido com sucesso";
         } catch (invalid_argument e) {
-          cout << "Valor não existe na árvore";
+          cout << "Valor nao existe na arvore";
         }
         break;
       case 3:
         cout << "Digite o valor que deseja consultar: ";
         cin >> value;
+        cout << endl;
         int* tree_value = tree.get(value);
         if (tree_value) {
           cout << "Valor encontrado: " << *tree_value;
         } else {
-          cout << "Valor não encontrado na árvore";
+          cout << "Valor nao encontrado na arvore";
         }
     }
     cout << endl << endl;
     cout << "Pressione qualquer tecla para continuar...";
     cin.sync();
     cin.ignore();
-    getchar(); 
   }
 }
