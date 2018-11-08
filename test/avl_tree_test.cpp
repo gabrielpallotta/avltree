@@ -1,4 +1,5 @@
 #include <cmath>
+#include <algorithm>
 #include <stdexcept>
 
 #include "avl_tree.hpp"
@@ -10,6 +11,10 @@ class AvlTreeTest : public ::testing::Test {
   protected:
     void SetUp() override {
       this->tree = AvlTree<int>();
+    }
+
+    void TearDown() override {
+      this->tree.~AvlTree();
     }
 
     AvlTree<int> tree;
@@ -60,45 +65,78 @@ TEST_F(AvlTreeTest, GetsTreeHeight) {
 }
 
 TEST_F(AvlTreeTest, BalancesOnAscendingInsertion) {
-  for (int i = 1; i <= 1000; i++) {
+  int total = 0;
+  for (int i = -1000; i <= 1000; i++) {
     tree.add(i);
-    ASSERT_TRUE(validHeight(i, tree.getHeight()));
+    total++;
+    ASSERT_TRUE(validHeight(total, tree.getHeight()));
   }
 }
 
 TEST_F(AvlTreeTest, BalancesOnDescendingInsertion) {
-  for (int i = 1000; i > 0; i--) {
+  int total = 0;
+  for (int i = 1000; i >= -1000; i--) {
     tree.add(i);
-    ASSERT_TRUE(validHeight(1001 - i, tree.getHeight()));
+    total++;
+    ASSERT_TRUE(validHeight(total, tree.getHeight()));
   }
 }
 
 TEST_F(AvlTreeTest, BalancesOnAscendingRemoval) {
-  for (int i = 1; i <= 1000; i++) {
+  int total = 0;
+  for (int i = -1000; i <= 1000; i++) {
     tree.add(i);
+    total++;
   }
 
-  for (int i = 1; i <= 1000; i++) {
+  for (int i = -1000; i <= 1000; i++) {
     tree.remove(i);
-    ASSERT_TRUE(validHeight(1000 - i, tree.getHeight()));
+    total--;
+    ASSERT_TRUE(validHeight(total, tree.getHeight()));
   }
 }
 
 TEST_F(AvlTreeTest, BalancesOnDescendingRemoval) {
-  for (int i = 1; i <= 1000; i++) {
+  int total = 0;
+  for (int i = -1000; i <= 1000; i++) {
     tree.add(i);
+    total++;
   }
 
-  for (int i = 1000; i > 0; i--) {
+  for (int i = 1000; i >= -1000; i--) {
     tree.remove(i);
-    ASSERT_TRUE(validHeight(i - 1, tree.getHeight()));
+    total--;
+    ASSERT_TRUE(validHeight(total, tree.getHeight()));
   }
 }
 
+TEST_F(AvlTreeTest, BalancesOnRandomInsertionAndRemoval) {
+  int total = 0;
+
+  vector<int> values;
+  for (int i = -1000; i <= 1000; i++) {
+    values.push_back(i);
+  }
+
+  random_shuffle(values.begin(), values.end());
+  
+  for (auto value : values) {
+    tree.add(value);
+    total++;
+    ASSERT_TRUE(validHeight(total, tree.getHeight()));
+  }
+   
+  random_shuffle(values.begin(), values.end());
+
+  for (auto value : values) {
+    tree.remove(value);
+    total--;
+    ASSERT_TRUE(validHeight(total, tree.getHeight()));
+  }
+}
 
 TEST_F(AvlTreeTest, ThrowsExceptionOnInvalidInsertion) {
   tree.add(1);
-  ASSERT_EQ(1, *tree.get(1));
   ASSERT_THROW(tree.add(1), invalid_argument);
 }
 
