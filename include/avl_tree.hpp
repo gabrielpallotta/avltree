@@ -307,8 +307,12 @@ void printTree(ostream& os, const AvlTree<T>& tree, int space)
 template <typename T>
 ostream& operator<<(ostream& os, const AvlTree<T>& tree)
 {
-  os << "--------------------------" << endl;
-  printTree(os, tree, 0);
+  os << "--------------------------";
+  if (tree.info == nullptr) {
+    os << endl;
+  } else {
+    printTree(os, tree, 0);
+  }
   os << "--------------------------" << endl;
   return os;
 }

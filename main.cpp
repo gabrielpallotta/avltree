@@ -1,0 +1,71 @@
+#include <iostream>
+#include <stdlib.h>
+
+#ifdef _WIN32
+  #define CLEAR_CMD "cls"
+#elif _WIN64
+  #define CLEAR_CMD "cls"
+#elif __linux__
+  #define CLEAR_CMD "clear"
+#endif
+
+#include "avl_tree.hpp"
+
+using namespace std;
+
+int main()
+{
+  AvlTree<int> tree = AvlTree<int>();
+
+  while (true) {
+    system(CLEAR_CMD);
+    cout << "Árvore AVL:" << endl;
+    cout << tree << endl;
+
+    cout << "1 - Inserir" << endl;
+    cout << "2 - Remover" << endl;
+    cout << "3 - Consulta" << endl << endl;
+    cout << "Digite uma opção: ";
+
+    int option;
+    cin >> option;
+
+    int value;
+    switch (option) {
+      case 1:
+        cout << "Digite o valor que deseja inserir: ";
+        cin >> value;
+        try {
+          tree.add(value);
+          cout << "Valor inserido com sucesso" ;
+        } catch (invalid_argument e) {
+          cout << "Valor já existe na árvore";
+        }
+        break;
+      case 2:
+        cout << "Digite o valor que deseja remover: ";
+        cin >> value;
+        try {
+          tree.remove(value);
+          cout << "Valor removido com sucesso";
+        } catch (invalid_argument e) {
+          cout << "Valor não existe na árvore";
+        }
+        break;
+      case 3:
+        cout << "Digite o valor que deseja consultar: ";
+        cin >> value;
+        int* tree_value = tree.get(value);
+        if (tree_value) {
+          cout << "Valor encontrado: " << *tree_value;
+        } else {
+          cout << "Valor não encontrado na árvore";
+        }
+    }
+    cout << endl << endl;
+    cout << "Pressione qualquer tecla para continuar...";
+    cin.sync();
+    cin.ignore();
+    getchar(); 
+  }
+}

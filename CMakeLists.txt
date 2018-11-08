@@ -7,6 +7,8 @@ add_subdirectory(deps/googletest)
 
 include_directories(include)
 
+add_executable(avltree ${SOURCE_FILES} main.cpp) 
+
 enable_testing()
 
 file(GLOB TEST_SRC_FILES ${PROJECT_SOURCE_DIR}/test/*.cpp)
